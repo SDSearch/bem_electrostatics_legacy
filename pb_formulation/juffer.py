@@ -3,7 +3,6 @@ import bempp.api
 
 def juffer(dirichl_space, neumann_space, q, x_q, ep_in, ep_ex, kappa):
     from bempp.api.operators.boundary import sparse, laplace, modified_helmholtz
-
     phi_id = sparse.identity(dirichl_space, dirichl_space, dirichl_space)
     dph_id = sparse.identity(neumann_space, neumann_space, neumann_space)
     ep = ep_ex/ep_in
@@ -24,13 +23,11 @@ def juffer(dirichl_space, neumann_space, q, x_q, ep_in, ep_ex, kappa):
     dP0 = modified_helmholtz.adjoint_double_layer(neumann_space, neumann_space, neumann_space, kappa)
     L4 = dF0 - (1./ep)*dP0
 
-    blocked = bempp.api.BlockedOperator(2, 2)
-    blocked[0, 0] = 0.5*(1. + ep)*phi_id - L1
-    blocked[0, 1] = -L2
-    blocked[1, 0] = L3    # Cambio de signo por definicion de bempp
-    blocked[1, 1] = 0.5*(1. + 1./ep)*dph_id - L4
-    #A = blocked.strong_form()
-    A = blocked
+    A = bempp.api.BlockedOperator(2, 2)
+    A[0, 0] = 0.5*(1. + ep)*phi_id - L1
+    A[0, 1] = -L2
+    A[1, 0] = L3    ## Sign change because of bempp definition
+    A[1, 1] = 0.5*(1. + 1./ep)*dph_id - L4
 
     def d_green_func(x, n, domain_index, result):
         const = -1./(4.*np.pi*ep_in)
@@ -41,6 +38,5 @@ def juffer(dirichl_space, neumann_space, q, x_q, ep_in, ep_ex, kappa):
 
     rhs_1 = bempp.api.GridFunction(dirichl_space, fun=green_func)
     rhs_2 = bempp.api.GridFunction(dirichl_space, fun=d_green_func)
-    rhs = np.concatenate([rhs_1.coefficients, rhs_2.coefficients])
 
-    return A, rhs
+    return A, rhs_1, rhs_2
