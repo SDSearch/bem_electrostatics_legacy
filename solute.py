@@ -78,10 +78,10 @@ class solute():
         setup_start_time = time.time() ## Start the timing for the matrix and rhs construction##
         if self.pb_formulation == "juffer":
             A, rhs_1, rhs_2 = pb_formulation.juffer(dirichl_space, neumann_space, self.q, self.x_q, self.ep_in, self.ep_ex, self.kappa)
-            A_strong = A.strong_form()
+            #A_strong = A.strong_form()
         elif self.pb_formulation == "direct":
             A, rhs_1, rhs_2 = pb_formulation.direct(dirichl_space, neumann_space, self.q, self.x_q, self.ep_in, self.ep_ex, self.kappa)
-            A_strong = A.strong_form()
+            #A_strong = A.strong_form()
         elif self.pb_formulation == "alpha_beta":
             A, rhs_1, rhs_2, A_in, A_out = pb_formulation.alpha_beta(dirichl_space, neumann_space, self.q, self.x_q, self.ep_in, self.ep_ex, self.kappa, self.pb_formulation_alpha, self.pb_formulation_beta)
         self.time_matrix_and_rhs_construction = time.time()-setup_start_time
@@ -192,7 +192,6 @@ def generate_msms_mesh_import_charges(solute):
 
     mesh_face_path = os.path.join(mesh_dir, solute.solute_name+".face")
     mesh_vert_path = os.path.join(mesh_dir, solute.solute_name+".vert")
-    
     
     if solute.mesh_generator == "msms":
         mesh_tools.generate_msms_mesh(mesh_xyzr_path, mesh_dir, solute.solute_name, solute.mesh_density, solute.mesh_probe_radius)
